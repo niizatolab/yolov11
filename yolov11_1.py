@@ -4,6 +4,8 @@ from harvesters.core import Harvester
 import numpy as np
 import time
 
+
+
 # GigEカメラのセットアップ
 def setup_gige_camera():
     h = Harvester()
