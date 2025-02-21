@@ -4,6 +4,8 @@ import time
 from harvesters.core import Harvester
 from ultralytics import YOLO
 
+
+#yes
 # GigEカメラのセットアップ
 def setup_gige_camera():
     h = Harvester()
