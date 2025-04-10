@@ -43,24 +43,24 @@ try:
         # YOLOによる物体検出・トラッキング
         results = model.track(frame, persist=True, tracker="bytetrack.yaml", conf=0.1, iou=0.45)
         
-        # 検出結果がある場合、バウンディングボックスおよびIDの描画
+        # 検出結果がある場合、バウンディングボックスとラベル（IDおよび中心座標）の描画
         if results[0].boxes is not None:
-            # バウンディングボックス（xyxy形式）
             bboxes = results[0].boxes.xyxy.cpu().numpy()
-            # トラッキングID（存在すれば取得、なければ-1を設定）
             ids = results[0].boxes.id.cpu().numpy() if results[0].boxes.id is not None else [-1] * len(bboxes)
             for box, track_id in zip(bboxes, ids):
                 x1, y1, x2, y2 = map(int, box[:4])
-                # 四角形を描画
+                # 中心座標の計算
+                center_x = (x1 + x2) // 2
+                center_y = (y1 + y2) // 2
+                # ラベルにIDと中心座標を表示（フォントサイズや太さは必要に応じて調整してください）
+                label = f"ID: {int(track_id)} Center: ({center_x}, {center_y})"
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                # トラッキングIDを描画
-                label = f"ID: {int(track_id)}"
-                cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
         
-        # 表示
+        # 結果の表示
         cv2.imshow("YOLO Detection", frame)
         
-        # FPS調整（次のフレーム取得までの待機時間の調整）
+        # FPS調整
         elapsed_time = time.time() - start_time
         sleep_time = max(0, frame_time - elapsed_time)
         time.sleep(sleep_time)
